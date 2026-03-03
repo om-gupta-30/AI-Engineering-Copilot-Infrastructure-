@@ -1,0 +1,47 @@
+services:
+
+  api:
+    build: .
+    container_name: ai_copilot_api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - mcp
+    networks:
+      - copilot_net
+
+  mcp:
+    build: .
+    container_name: ai_copilot_mcp
+    command: python ai_copilot_infra/mcp_server/run.py
+    ports:
+      - "8100:8100"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - context7
+    networks:
+      - copilot_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: ai_copilot_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - copilot_net
+
+  context7:
+    image: python:3.11-slim
+    container_name: ai_copilot_context7
+    command: echo "Context7 placeholder — replace with real image when available"
+    networks:
+      - copilot_net
+
+networks:
+  copilot_net:
+    driver: bridge
